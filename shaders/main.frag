@@ -19,6 +19,6 @@ void main() {
     fogFactor = clamp(fogFactor, 0.0, 1.0);
     vec4 baseColor = texture(atlas, Tex);
 
-    FragColor = mix(vec4(fogColor, 1.0), baseColor, fogFactor);
+    FragColor = mix(vec4(fogColor, 1.0), baseColor, fogFactor * 1.2);
 
 }

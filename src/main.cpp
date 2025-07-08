@@ -5,10 +5,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <chrono>
+#include <vector>
 #include "camera.h"
 #include "stb_image.h"
 #include "world.h"
 #include "chunk.h"
+#include "skybox.h"
 
 #define SHADER_DIR "shaders/"
 
@@ -78,6 +80,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     }
 }
 
+
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -102,8 +105,6 @@ int main() {
     glViewport(0, 0, mode->width, mode->height);
     glClearColor(0.529f, 0.808f, 0.922f, 1.0f);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CW);
 
     Shader shader(SHADER_DIR "main.vert", SHADER_DIR "main.frag");
     world.setRenderDistance(3);
@@ -118,6 +119,7 @@ int main() {
     glGenTextures(1, &texture);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
+    stbi_set_flip_vertically_on_load(false); // <-- ensure this!
     int width, height, ch;
     unsigned char* data = stbi_load("assets/atlas.jpg", &width, &height, &ch, 3);
     if (!data) {
@@ -132,6 +134,20 @@ int main() {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
+
+    std::vector<std::string> faces = {
+        "assets/skybox/right.jpg",
+        "assets/skybox/left.jpg",
+        "assets/skybox/top.jpg",
+        "assets/skybox/bottom.jpg",
+        "assets/skybox/front.jpg",
+        "assets/skybox/back.jpg",
+    };
+    Skybox skybox(faces);
+
+    Shader skyboxShader(SHADER_DIR "skybox.vert", SHADER_DIR "skybox.frag");
+    skyboxShader.use();
+    skyboxShader.set_int("skybox", 0);
 
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = glfwGetTime();
@@ -156,7 +172,13 @@ int main() {
         processKeyboard(window);
         
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glDepthFunc(GL_LEQUAL);
+        skybox.draw(camera.getViewMatrix(), projection, skyboxShader);
+        glDepthFunc(GL_LESS);
+
         shader.use();
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
 

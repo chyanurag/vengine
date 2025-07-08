@@ -10,20 +10,18 @@
 
 - [x] Fly fps camera
 
-- [x] Implement world class to get global block data
-
 - [x] Dynamically generate chunks around camera position
 
-- [x] Raycasting and Breaking blocks
+- [x] Raycasting, breaking and placing blocks
 
-- [x] Exponetial fog for hiding chunk generation
+- [x] Exponetial fog for complementing chunk generation
+
+- [x] Skybox
 
 ### TODO
 
 - [ ] procedurally generate terrain using simplex or perlin noise
 
 - [ ] Simple lighting (blinn phong)
-
-- [ ] Skybox
 
 - [ ] UI (Maybe)

@@ -107,7 +107,7 @@ void World::setPlayerPos(glm::vec3 pos) {
 
 void World::updateChunks() {
     int built = 0;
-    const int maxChunksPerFrame = 2;
+    const int maxChunksPerFrame = 1;
 
     for (auto& [pos, chunk] : chunks) {
         if (chunk->isDirty()) {
