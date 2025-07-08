@@ -12,13 +12,13 @@
 
 - [x] Dynamically generate chunks around camera position
 
+- [x] Implement world class to get global block data
+
 ### TODO
 
 - [ ] procedurally generate terrain using simplex or perlin noise
 
 - [ ] Raycasting and Breaking blocks
-
-- [ ] Implement world class to get global block data
 
 - [ ] Simple lighting (blinn phong)
 

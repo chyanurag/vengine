@@ -10,7 +10,7 @@
 
 #define SHADER_DIR "shaders/"
 
-Camera camera(glm::vec3(0.f, 70.f, 20.f));
+Camera camera(glm::vec3(0.f, 100.f, 20.f));
 float lastX = 400, lastY = 400;
 bool firstMouse = true;
 float deltaTime = 0.0f;
