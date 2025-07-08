@@ -14,7 +14,7 @@
 
 #define SHADER_DIR "shaders/"
 
-Camera camera(glm::vec3(0.f, 70.f, 20.f));
+Camera camera(glm::vec3(0.f, 30.f, 20.f));
 float lastX = 400, lastY = 400;
 bool firstMouse = true;
 float deltaTime = 0.0f;
@@ -188,8 +188,8 @@ int main() {
 
         shader.set_vec3("cameraPos", camera.position);
         shader.set_vec3("fogColor", glm::vec3(0.7f, 0.7f, 0.8f));
-        shader.set_float("fogStart", 10.f);
-        shader.set_float("fogEnd", 40.f);
+        shader.set_float("fogStart", 40.f);
+        shader.set_float("fogEnd", 100.f);
 
         world.setPlayerPos(camera.position);
         world.updateChunks();

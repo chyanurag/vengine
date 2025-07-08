@@ -9,7 +9,8 @@ enum BlockType {
     Stone,
     Log,
     Plank,
-    Cobblestone
+    Cobblestone,
+    Water
 };
 
 struct BlockTexture {

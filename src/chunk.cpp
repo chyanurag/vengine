@@ -1,5 +1,6 @@
 #include "chunk.h"
 #include "world.h"
+#include "stb_perlin.h"
 
 const float faceVertices[6][6][3] = {
     // Back face (z-)
@@ -53,6 +54,7 @@ std::unordered_map<BlockType, BlockTexture> blockTextures = {
     { Log, { 5, 4, 4 } },
     { Plank, { 6, 6, 6 } },
     { Cobblestone, { 7, 7, 7 } },
+    { Water, {8, 8, 8} },
 };
 
 std::vector<float> Chunk::buildMesh() {
@@ -133,11 +135,54 @@ void Chunk::buildAndUploadMesh() {
 }
 
 void Chunk::initializeChunk() {
+    float baseFrequency = 0.07f;
+    float persistence = .3f;
+    int octaves = 5;
+    int maxTerrainHeight = CHUNK_HEIGHT - 1;
+    float heightScale = 40.0f;
+    float baseHeight = 30.0f;
+    int WATER_LEVEL = 30;
 
     for (int x = 0; x < CHUNK_WIDTH; x++) {
         for (int z = 0; z < CHUNK_DEPTH; z++) {
+            int worldX = chunkPos.x * CHUNK_WIDTH + x;
+            int worldZ = chunkPos.y * CHUNK_DEPTH + z;
+
+            float total = 0;
+            float frequency = baseFrequency;
+            float amplitude = 1.0f;
+            float maxAmplitude = 0;
+
+            for (int i = 0; i < octaves; i++) {
+                float noise = stb_perlin_noise3(worldX * frequency, worldZ * frequency, 0.0f, 0, 0, 0);
+                total += noise * amplitude;
+                maxAmplitude += amplitude;
+                frequency *= 2.0f;
+                amplitude *= persistence;
+            }
+
+            total /= maxAmplitude;
+
+            float terrainHeightF = baseHeight + total * heightScale;
+            int terrainHeight = static_cast<int>(glm::clamp(terrainHeightF, 1.0f, (float)maxTerrainHeight));
+
             for (int y = 0; y < CHUNK_HEIGHT; y++) {
-                blocks[x][y][z] = Grass;
+                if (terrainHeight > 60 && terrainHeight < 64) { terrainHeight = 60; }
+                if (y > terrainHeight) {
+                    blocks[x][y][z] = Air;
+                } else if (y == terrainHeight) {
+                    blocks[x][y][z] = Grass;
+                } else if (y >= terrainHeight - 3) {
+                    blocks[x][y][z] = Dirt;
+                } else {
+                    blocks[x][y][z] = Stone;
+                }
+            }
+            // filling water
+            for (int y = 0; y <= WATER_LEVEL; y++) {
+                if (blocks[x][y][z] == Air && (getBlock(x, y-1, z) != Air || getBlock(x, y-1, z) == Water)) {
+                    blocks[x][y][z] = Water;
+                }
             }
         }
     }

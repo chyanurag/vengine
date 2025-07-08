@@ -18,9 +18,9 @@
 
 - [x] Skybox
 
-### TODO
+- [x] procedurally generate terrain using simplex or perlin noise
 
-- [ ] procedurally generate terrain using simplex or perlin noise
+### TODO
 
 - [ ] Simple lighting (blinn phong)
 

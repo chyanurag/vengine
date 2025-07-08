@@ -64,18 +64,18 @@ void World::updateChunksAroundPlayer() {
 
             if (chunks.find(pos) == chunks.end()) {
                 chunks[pos] = std::make_unique<Chunk>(this, pos.x, pos.y);
-                glm::ivec2 surrouding = pos + glm::ivec2(0, 1);
-                auto neighborIt = chunks.find(surrouding);
-                if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
-                surrouding = pos + glm::ivec2(0, -1);
-                neighborIt = chunks.find(surrouding);
-                if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
-                surrouding = pos + glm::ivec2(1, 0);
-                neighborIt = chunks.find(surrouding);
-                if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
-                surrouding = pos + glm::ivec2(-1, 0);
-                neighborIt = chunks.find(surrouding);
-                if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
+                // glm::ivec2 surrouding = pos + glm::ivec2(0, 1);
+                // auto neighborIt = chunks.find(surrouding);
+                // if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
+                // surrouding = pos + glm::ivec2(0, -1);
+                // neighborIt = chunks.find(surrouding);
+                // if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
+                // surrouding = pos + glm::ivec2(1, 0);
+                // neighborIt = chunks.find(surrouding);
+                // if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
+                // surrouding = pos + glm::ivec2(-1, 0);
+                // neighborIt = chunks.find(surrouding);
+                // if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
             }
         }
     }
@@ -85,6 +85,18 @@ void World::updateChunksAroundPlayer() {
             it = chunks.erase(it);
         } else {
             ++it;
+        }
+    }
+
+    for (const glm::ivec2& pos : neededChunks) {
+        bool hasAllNeighbors =
+            chunks.find(pos + glm::ivec2( 1,  0)) != chunks.end() &&
+            chunks.find(pos + glm::ivec2(-1,  0)) != chunks.end() &&
+            chunks.find(pos + glm::ivec2( 0,  1)) != chunks.end() &&
+            chunks.find(pos + glm::ivec2( 0, -1)) != chunks.end();
+
+        if (hasAllNeighbors) {
+            chunks[pos]->setDirty(true);
         }
     }
 }
