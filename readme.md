@@ -25,3 +25,5 @@
 - [ ] Simple lighting (blinn phong)
 
 - [ ] UI (Maybe)
+
+- [ ] Crosshair
