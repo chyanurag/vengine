@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <chrono>
 #include "camera.h"
 #include "stb_image.h"
 #include "world.h"
@@ -142,6 +143,8 @@ int main() {
         }
 
         glfwPollEvents();
+
+        auto start = std::chrono::high_resolution_clock::now();
         processKeyboard(window);
         
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -156,6 +159,9 @@ int main() {
         world.setPlayerPos(camera.position);
         world.updateChunks();
         world.drawChunks(shader);
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::cout << "Frame Time: " << std::chrono::duration<float, std::milli>(end - start).count() << "ms\n";
 
         glfwSwapBuffers(window);
     }

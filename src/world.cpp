@@ -91,9 +91,6 @@ void World::updateChunksAroundPlayer() {
 
 void World::drawChunks(Shader& shader) {
     for (auto& [pos, chunk] : chunks) {
-        if (chunk->isDirty()) {
-            chunk->buildAndUploadMesh();
-        }
         chunk->draw(shader);
     }
 }
