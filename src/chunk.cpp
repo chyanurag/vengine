@@ -1,6 +1,5 @@
 #include "chunk.h"
 #include "world.h"
-#include "FastNoiseLite.h"
 
 const float faceVertices[6][6][3] = {
     // Back face (z-)
@@ -46,14 +45,17 @@ Chunk::Chunk(World* world, int x, int z) {
     dirty = true;
 }
 
+std::unordered_map<BlockType, BlockTexture> blockTextures = {
+    { Dirt,  { 0, 0, 0 } },
+    { Grass, { 2, 1, 0 } },
+    { Stone, { 3, 3, 3 } },
+    { Log, { 5, 4, 4 } },
+    { Plank, { 6, 6, 6 } },
+    { Cobblestone, { 7, 7, 7 } },
+};
 
 std::vector<float> Chunk::buildMesh() {
     std::vector<float> vertices;
-    std::unordered_map<BlockType, BlockTexture> blockTextures = {
-        { Dirt,  { 0, 0, 0 } },
-        { Grass, { 2, 1, 0 } },
-        { Stone, { 3, 3, 3 } },
-    };
 
     for (int x = 0; x < CHUNK_WIDTH; x++) {
         for (int y = 0; y < CHUNK_HEIGHT; y++) {

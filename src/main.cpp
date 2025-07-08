@@ -8,6 +8,7 @@
 #include "camera.h"
 #include "stb_image.h"
 #include "world.h"
+#include "chunk.h"
 
 #define SHADER_DIR "shaders/"
 
@@ -65,6 +66,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
             world.setBlock(hitBlock.x, hitBlock.y, hitBlock.z, Air);
         }
         else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+            if (prevBlock.y >= CHUNK_HEIGHT) {
+                std::cout << "Build limit reached\n";
+                return;
+            }
             if (world.getWorldBlock(prevBlock.x, prevBlock.y, prevBlock.z) == Air &&
                 glm::distance(glm::vec3(prevBlock) + glm::vec3(0.5f), camera.position) > 1.0f) {
                 world.setBlock(prevBlock.x, prevBlock.y, prevBlock.z, Stone); // Or selected type
@@ -78,7 +83,9 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    GLFWwindow* window = glfwCreateWindow(800, 800, "Minecraft", nullptr, nullptr);
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+    GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "Minecraft", monitor, nullptr);
 
     if (window == NULL) {
         throw "window creation failed\n";
@@ -92,19 +99,20 @@ int main() {
 
 
     glewInit();
-    glViewport(0, 0, 800, 800);
+    glViewport(0, 0, mode->width, mode->height);
     glClearColor(0.529f, 0.808f, 0.922f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CW);
 
     Shader shader(SHADER_DIR "main.vert", SHADER_DIR "main.frag");
-    world.setRenderDistance(4);
+    world.setRenderDistance(3);
     world.setPlayerPos(camera.position);
     world.updateChunksAroundPlayer();
     world.updateChunks();
 
-    glm::mat4 projection = glm::perspective(glm::radians(90.f), 800.f/800.f, .1f, 1000.f);
+    float aspectRatio = static_cast<float>(mode->width) / static_cast<float>(mode->height);
+    glm::mat4 projection = glm::perspective(glm::radians(90.f), aspectRatio, .1f, 1000.f);
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -159,7 +167,7 @@ int main() {
         shader.set_vec3("cameraPos", camera.position);
         shader.set_vec3("fogColor", glm::vec3(0.7f, 0.7f, 0.8f));
         shader.set_float("fogStart", 10.f);
-        shader.set_float("fogEnd", 50.f);
+        shader.set_float("fogEnd", 40.f);
 
         world.setPlayerPos(camera.position);
         world.updateChunks();

@@ -3,7 +3,7 @@
 
 World::World() {
     lastPlayerChunk = glm::ivec2(INT_MIN);
-    setRenderDistance(2);
+    setRenderDistance(3);
 }
 
 void World::setRenderDistance(unsigned int dist) {
@@ -158,6 +158,7 @@ bool World::raycastBlock(glm::vec3 origin, glm::vec3 direction, int maxSteps, gl
 }
 
 BlockType World::getWorldBlock(int x, int y, int z) {
+    if (y < 0 || y >= CHUNK_HEIGHT) return Air;
     glm::ivec2 chunkPos = getChunkCoords(x, z);
     auto it = chunks.find(chunkPos);
     if (it == chunks.end()) {
