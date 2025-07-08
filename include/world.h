@@ -27,6 +27,7 @@ class World {
     std::unordered_map<glm::ivec2, std::unique_ptr<Chunk>> chunks;
     unsigned int renderDistance;
     glm::vec3 playerPos;
+    glm::ivec2 lastPlayerChunk;
     public:
         World();
         glm::ivec2 getChunkCoords(int x, int z);

@@ -2,6 +2,7 @@
 #include "chunk.h"
 
 World::World() {
+    lastPlayerChunk = glm::ivec2(INT_MIN);
     setRenderDistance(2);
 }
 
@@ -97,8 +98,14 @@ void World::drawChunks(Shader& shader) {
     }
 }
 
-void World::setPlayerPos(glm::vec3 playerPos) {
-    this->playerPos = playerPos;
+void World::setPlayerPos(glm::vec3 pos) {
+    this->playerPos = pos;
+    glm::ivec2 currentChunk = getChunkCoords(pos.x, pos.z);
+
+    if (currentChunk != lastPlayerChunk) {
+        updateChunksAroundPlayer();
+        lastPlayerChunk = currentChunk;
+    }
 }
 
 void World::updateChunks() {

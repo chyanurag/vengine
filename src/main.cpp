@@ -56,11 +56,18 @@ void mouse_callback(GLFWwindow* _, double xpos, double ypos) {
 World world;
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-        glm::ivec3 hitBlock;
-        glm::ivec3 prevBlock;
-        if (world.raycastBlock(camera.position, camera.getFront(), 100, hitBlock, prevBlock)) {
+    glm::ivec3 hitBlock;
+    glm::ivec3 prevBlock;
+
+    if (world.raycastBlock(camera.position, camera.getFront(), 100, hitBlock, prevBlock)) {
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
             world.setBlock(hitBlock.x, hitBlock.y, hitBlock.z, Air);
+        }
+        else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+            if (world.getWorldBlock(prevBlock.x, prevBlock.y, prevBlock.z) == Air &&
+                glm::distance(glm::vec3(prevBlock) + glm::vec3(0.5f), camera.position) > 1.0f) {
+                world.setBlock(prevBlock.x, prevBlock.y, prevBlock.z, Stone); // Or selected type
+            }
         }
     }
 }
@@ -147,7 +154,6 @@ int main() {
         shader.set_mat4("view", camera.getViewMatrix());
 
         world.setPlayerPos(camera.position);
-        world.updateChunksAroundPlayer();
         world.updateChunks();
         world.drawChunks(shader);
 
@@ -155,7 +161,7 @@ int main() {
     }
 
 
-
+    glDeleteTextures(1, &texture);
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
