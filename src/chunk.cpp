@@ -1,5 +1,6 @@
 #include "chunk.h"
 #include "world.h"
+#include "FastNoiseLite.h"
 
 const float faceVertices[6][6][3] = {
     // Back face (z-)
@@ -35,16 +36,13 @@ const int ATLAS_SIZE = 4;
 const float tileSize = 1.0f / static_cast<float>(4);
 
 Chunk::Chunk(World* world, int x, int z) {
-
     vao = 0;
     vbo = 0;
-
+    chunkPos = glm::ivec2(x, z);
     initializeChunk();
 
-    chunkPos = glm::ivec2(x, z);
     worldRef = world;
     model = glm::translate(glm::mat4(1.f), glm::vec3(x * CHUNK_WIDTH, 0, z * CHUNK_DEPTH));
-
     dirty = true;
 }
 
@@ -132,16 +130,11 @@ void Chunk::buildAndUploadMesh() {
 }
 
 void Chunk::initializeChunk() {
+
     for (int x = 0; x < CHUNK_WIDTH; x++) {
-        for (int y = 0; y < CHUNK_HEIGHT; y++) {
-            for (int z = 0; z < CHUNK_DEPTH; z++) {
-                if (y < 10) {
-                    blocks[x][y][z] = Stone;
-                } else if (y < CHUNK_HEIGHT - 2) {
-                    blocks[x][y][z] = Dirt;
-                } else {
-                    blocks[x][y][z] = Grass;
-                }
+        for (int z = 0; z < CHUNK_DEPTH; z++) {
+            for (int y = 0; y < CHUNK_HEIGHT; y++) {
+                blocks[x][y][z] = Grass;
             }
         }
     }

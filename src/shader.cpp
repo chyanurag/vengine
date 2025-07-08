@@ -45,7 +45,7 @@ void Shader::check_compilation(GLuint shader, std::string type) {
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(shader, sizeof(infoLog), NULL, infoLog);
-        std::cerr << type << " shader compilation failed\n";
+        std::cerr << type << " shader compilation failed\n" << infoLog << '\n';
         throw "shader compilation failed\n";
     }
 }
@@ -58,6 +58,16 @@ void Shader::set_mat4(std::string name, glm::mat4 matrix) {
 void Shader::set_int(std::string name, int value) {
     GLuint location = glGetUniformLocation(program, name.c_str());
     glUniform1i(location, value);
+}
+
+void Shader::set_float(std::string name, float value) {
+    GLuint location = glGetUniformLocation(program, name.c_str());
+    glUniform1f(location, value);
+}
+
+void Shader::set_vec3(std::string name, glm::vec3 value) {
+    GLuint location = glGetUniformLocation(program, name.c_str());
+    glUniform3f(location, value.x, value.y, value.z);
 }
 
 void Shader::use() {

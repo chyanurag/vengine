@@ -16,6 +16,8 @@
 
 - [x] Raycasting and Breaking blocks
 
+- [x] Exponetial fog for hiding chunk generation
+
 ### TODO
 
 - [ ] procedurally generate terrain using simplex or perlin noise

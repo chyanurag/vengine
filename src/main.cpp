@@ -156,6 +156,11 @@ int main() {
         shader.set_mat4("projection", projection);
         shader.set_mat4("view", camera.getViewMatrix());
 
+        shader.set_vec3("cameraPos", camera.position);
+        shader.set_vec3("fogColor", glm::vec3(0.7f, 0.7f, 0.8f));
+        shader.set_float("fogStart", 10.f);
+        shader.set_float("fogEnd", 50.f);
+
         world.setPlayerPos(camera.position);
         world.updateChunks();
         world.drawChunks(shader);

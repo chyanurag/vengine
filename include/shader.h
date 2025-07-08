@@ -16,6 +16,8 @@ class Shader {
         std::string read_file(std::string path);
         void set_mat4(std::string name, glm::mat4 matrix);
         void set_int(std::string name, int value);
+        void set_float(std::string name, float value);
+        void set_vec3(std::string name, glm::vec3 value);
         void check_compilation(GLuint shader, std::string type);
         void use();
         ~Shader();
