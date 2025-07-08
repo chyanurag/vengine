@@ -80,7 +80,7 @@ int main() {
 
     Shader shader(SHADER_DIR "main.vert", SHADER_DIR "main.frag");
     World world;
-    world.setRenderDistance(2);
+    world.setRenderDistance(4);
     world.setPlayerPos(camera.position);
     world.updateChunksAroundPlayer();
     world.updateChunks();

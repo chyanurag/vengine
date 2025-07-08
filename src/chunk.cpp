@@ -164,6 +164,11 @@ void Chunk::setBlock(int x, int y, int z, BlockType type) {
     dirty = true;
 }
 
+void Chunk::setDirty(bool value) {
+    if (value != dirty)
+        dirty = value;
+}
+
 bool Chunk::isDirty() {
     return dirty;
 }

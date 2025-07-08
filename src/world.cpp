@@ -31,6 +31,18 @@ void World::updateChunksAroundPlayer() {
 
             if (chunks.find(pos) == chunks.end()) {
                 chunks[pos] = std::make_unique<Chunk>(this, pos.x, pos.y);
+                glm::ivec2 surrouding = pos + glm::ivec2(0, 1);
+                auto neighborIt = chunks.find(surrouding);
+                if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
+                surrouding = pos + glm::ivec2(0, -1);
+                neighborIt = chunks.find(surrouding);
+                if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
+                surrouding = pos + glm::ivec2(1, 0);
+                neighborIt = chunks.find(surrouding);
+                if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
+                surrouding = pos + glm::ivec2(-1, 0);
+                neighborIt = chunks.find(surrouding);
+                if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
             }
         }
     }

@@ -26,6 +26,7 @@ class Chunk {
         void initializeChunk();
         void buildAndUploadMesh();
         bool isDirty();
+        void setDirty(bool value);
         std::vector<float> buildMesh();
         void draw(Shader &shader);
         ~Chunk();
