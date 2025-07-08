@@ -30,7 +30,9 @@ const float baseUVs[6][2] = {
     {0.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
 };
 
-const float tileSize = 1.0f / 4.0f;
+const int ATLAS_SIZE = 4;
+
+const float tileSize = 1.0f / static_cast<float>(4);
 
 Chunk::Chunk(World* world, int x, int z) {
 
@@ -41,7 +43,6 @@ Chunk::Chunk(World* world, int x, int z) {
 
     chunkPos = glm::ivec2(x, z);
     worldRef = world;
-    glm::mat4 identity = glm::mat4(1.f);
     model = glm::translate(glm::mat4(1.f), glm::vec3(x * CHUNK_WIDTH, 0, z * CHUNK_DEPTH));
 
     dirty = true;
@@ -166,8 +167,7 @@ void Chunk::setBlock(int x, int y, int z, BlockType type) {
 }
 
 void Chunk::setDirty(bool value) {
-    if (value != dirty)
-        dirty = value;
+    dirty = value;
 }
 
 bool Chunk::isDirty() {

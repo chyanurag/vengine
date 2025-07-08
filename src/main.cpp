@@ -10,7 +10,7 @@
 
 #define SHADER_DIR "shaders/"
 
-Camera camera(glm::vec3(0.f, 100.f, 20.f));
+Camera camera(glm::vec3(0.f, 70.f, 20.f));
 float lastX = 400, lastY = 400;
 bool firstMouse = true;
 float deltaTime = 0.0f;
@@ -53,6 +53,17 @@ void mouse_callback(GLFWwindow* _, double xpos, double ypos) {
     camera.processMouse(dx, dy);
 }
 
+World world;
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+        glm::ivec3 hitBlock;
+        glm::ivec3 prevBlock;
+        if (world.raycastBlock(camera.position, camera.getFront(), 100, hitBlock, prevBlock)) {
+            world.setBlock(hitBlock.x, hitBlock.y, hitBlock.z, Air);
+        }
+    }
+}
 
 int main() {
     glfwInit();
@@ -69,6 +80,7 @@ int main() {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSwapInterval(0);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 
     glewInit();
@@ -79,7 +91,6 @@ int main() {
     glFrontFace(GL_CW);
 
     Shader shader(SHADER_DIR "main.vert", SHADER_DIR "main.frag");
-    World world;
     world.setRenderDistance(4);
     world.setPlayerPos(camera.position);
     world.updateChunksAroundPlayer();

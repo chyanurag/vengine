@@ -10,15 +10,15 @@
 
 - [x] Fly fps camera
 
+- [x] Implement world class to get global block data
+
 - [x] Dynamically generate chunks around camera position
 
-- [x] Implement world class to get global block data
+- [x] Raycasting and Breaking blocks
 
 ### TODO
 
 - [ ] procedurally generate terrain using simplex or perlin noise
-
-- [ ] Raycasting and Breaking blocks
 
 - [ ] Simple lighting (blinn phong)
 

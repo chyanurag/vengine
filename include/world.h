@@ -31,10 +31,13 @@ class World {
         World();
         glm::ivec2 getChunkCoords(int x, int z);
         BlockType getWorldBlock(int x, int y, int z);
+        void setBlock(int x, int y, int z, BlockType type);
         void drawChunks(Shader& shade);
         void updateChunksAroundPlayer();
         void setRenderDistance(unsigned int dist);
         void setPlayerPos(glm::vec3 playerPos);
         void updateChunks();
+        bool raycastBlock(glm::vec3 origin, glm::vec3 direction, int maxSteps, glm::ivec3& outBlock, glm::ivec3& outPrevBlock);
+        void markChunkDirty(int x, int z);
         ~World();
 };

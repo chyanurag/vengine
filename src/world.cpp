@@ -20,6 +20,38 @@ glm::ivec2 World::getChunkCoords(int x, int z) {
     return glm::ivec2(chunkX, chunkZ);
 }
 
+void World::markChunkDirty(int x, int z) {
+    glm::ivec2 neighborCoords = getChunkCoords(x, z);
+    auto it = chunks.find(neighborCoords);
+    if (it != chunks.end()) {
+        it->second->setDirty(true);
+    }
+}
+
+void World::setBlock(int x, int y, int z, BlockType type) {
+    glm::ivec2 chunkCoords = getChunkCoords(x, z);
+    auto it = chunks.find(chunkCoords);
+    if (it == chunks.end()) return;
+
+    int localX = x % CHUNK_WIDTH;
+    int localZ = z % CHUNK_DEPTH;
+    if (localX < 0) localX += CHUNK_WIDTH;
+    if (localZ < 0) localZ += CHUNK_DEPTH;
+
+    Chunk* chunk = it->second.get();
+    chunk->setBlock(localX, y, localZ, type);
+
+    if (localX == 0)
+        markChunkDirty(x - 1, z);
+    else if (localX == CHUNK_WIDTH - 1)
+        markChunkDirty(x + 1, z);
+
+    if (localZ == 0) 
+        markChunkDirty(x, z - 1);
+    else if (localZ == CHUNK_DEPTH - 1)
+        markChunkDirty(x, z + 1);
+}
+
 void World::updateChunksAroundPlayer() {
     glm::ivec2 centerChunk = getChunkCoords(playerPos.x, playerPos.z);
     std::unordered_set<glm::ivec2> neededChunks;
@@ -81,6 +113,44 @@ void World::updateChunks() {
                 break;
         }
     }
+}
+
+bool World::raycastBlock(glm::vec3 origin, glm::vec3 direction, int maxSteps, glm::ivec3& outBlock, glm::ivec3& outPrevBlock) {
+    glm::vec3 pos = glm::floor(origin);
+    glm::ivec3 step = glm::sign(direction);
+    glm::vec3 tMax;
+    glm::vec3 tDelta;
+
+    glm::vec3 invDir = 1.0f / direction;
+
+    for (int i = 0; i < 3; ++i) {
+        float rayOrigAxis = origin[i] - pos[i];
+        tMax[i] = (step[i] > 0 ? (1.0f - rayOrigAxis) : rayOrigAxis) * std::abs(invDir[i]);
+        tDelta[i] = std::abs(invDir[i]);
+    }
+
+    for (int i = 0; i < maxSteps; ++i) {
+        BlockType block = getWorldBlock((int)pos.x, (int)pos.y, (int)pos.z);
+        if (block != Air) {
+            outBlock = glm::ivec3(pos);
+            return true;
+        }
+
+        outPrevBlock = glm::ivec3(pos);
+
+        if (tMax.x < tMax.y && tMax.x < tMax.z) {
+            pos.x += step.x;
+            tMax.x += tDelta.x;
+        } else if (tMax.y < tMax.z) {
+            pos.y += step.y;
+            tMax.y += tDelta.y;
+        } else {
+            pos.z += step.z;
+            tMax.z += tDelta.z;
+        }
+    }
+
+    return false;
 }
 
 BlockType World::getWorldBlock(int x, int y, int z) {
