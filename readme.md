@@ -10,12 +10,11 @@
 
 - [x] Fly fps camera
 
+- [x] Dynamically generate chunks around camera position
 
 ### TODO
 
 - [ ] procedurally generate terrain using simplex or perlin noise
-
-- [ ] Dynamically generate chunks around camera position
 
 - [ ] Raycasting and Breaking blocks
 

@@ -1,10 +1,40 @@
 #pragma once
 
-#include "chunk.h"
 #include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <memory>
+#include "shader.h"
+#include "block.h"
+
+
+class Chunk;
+
+struct ChunkTask {
+    glm::ivec2 pos;
+};
+
+namespace std {
+    template<>
+    struct hash<glm::ivec2> {
+        std::size_t operator()(const glm::ivec2& k) const {
+            return std::hash<int>()(k.x) ^ (std::hash<int>()(k.y) << 1);
+        }
+    };
+}
 
 class World {
+    std::unordered_map<glm::ivec2, std::unique_ptr<Chunk>> chunks;
+    unsigned int renderDistance;
+    glm::vec3 playerPos;
     public:
         World();
+        glm::ivec2 getChunkCoords(int x, int z);
+        BlockType getWorldBlock(int x, int y, int z);
+        void drawChunks(Shader& shade);
+        void updateChunksAroundPlayer();
+        void setRenderDistance(unsigned int dist);
+        void setPlayerPos(glm::vec3 playerPos);
+        void updateChunks();
         ~World();
 };

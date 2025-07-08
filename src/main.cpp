@@ -1,4 +1,3 @@
-#include "chunk.h"
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
@@ -7,10 +6,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "camera.h"
 #include "stb_image.h"
+#include "world.h"
 
 #define SHADER_DIR "shaders/"
 
-Camera camera(glm::vec3(0.f, 40.f, 20.f));
+Camera camera(glm::vec3(0.f, 70.f, 20.f));
 float lastX = 400, lastY = 400;
 bool firstMouse = true;
 float deltaTime = 0.0f;
@@ -34,7 +34,7 @@ void processKeyboard(GLFWwindow *window) {
         camera.processKeyboard(GLFW_KEY_C, deltaTime);
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+void mouse_callback(GLFWwindow* _, double xpos, double ypos) {
     static float lastX = 400.0f;
     static float lastY = 400.0f;
 
@@ -60,11 +60,15 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     GLFWwindow* window = glfwCreateWindow(800, 800, "Minecraft", nullptr, nullptr);
+
+    if (window == NULL) {
+        throw "window creation failed\n";
+    }
+
     glfwMakeContextCurrent(window);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSwapInterval(0);
-
 
 
     glewInit();
@@ -74,12 +78,14 @@ int main() {
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CW);
 
-    Chunk chunk;
     Shader shader(SHADER_DIR "main.vert", SHADER_DIR "main.frag");
+    World world;
+    world.setRenderDistance(2);
+    world.setPlayerPos(camera.position);
+    world.updateChunksAroundPlayer();
+    world.updateChunks();
 
     glm::mat4 projection = glm::perspective(glm::radians(90.f), 800.f/800.f, .1f, 1000.f);
-    glm::mat4 model = glm::mat4(1.f);
-    glm::mat4 view = glm::lookAt(glm::vec3(0.f, 0.f, 20.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -98,6 +104,7 @@ int main() {
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(data);
 
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = glfwGetTime();
@@ -123,11 +130,15 @@ int main() {
         shader.use();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
+
         shader.set_int("atlas", 0);
-        shader.set_mat4("model", model);
         shader.set_mat4("projection", projection);
         shader.set_mat4("view", camera.getViewMatrix());
-        chunk.draw(shader);
+
+        world.setPlayerPos(camera.position);
+        world.updateChunksAroundPlayer();
+        world.updateChunks();
+        world.drawChunks(shader);
 
         glfwSwapBuffers(window);
     }

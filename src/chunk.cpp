@@ -1,4 +1,5 @@
 #include "chunk.h"
+#include "world.h"
 
 const float faceVertices[6][6][3] = {
     // Back face (z-)
@@ -31,10 +32,18 @@ const float baseUVs[6][2] = {
 
 const float tileSize = 1.0f / 4.0f;
 
-Chunk::Chunk() {
-    glGenBuffers(1, &vbo);
-    glGenVertexArrays(1, &vao);
+Chunk::Chunk(World* world, int x, int z) {
+
+    vao = 0;
+    vbo = 0;
+
     initializeChunk();
+
+    chunkPos = glm::ivec2(x, z);
+    worldRef = world;
+    model = glm::translate(glm::mat4(1.f), glm::vec3(x * CHUNK_WIDTH, 0, z * CHUNK_DEPTH));
+
+    dirty = true;
 }
 
 
@@ -53,10 +62,13 @@ std::vector<float> Chunk::buildMesh() {
                 if (block == Air)
                     continue;
                 for (int face = 0; face < 6; face++) {
-                    glm::ivec3 neighbor = glm::ivec3(x, y, z) + faceNormals[face];
+                    glm::ivec3 globalPos = glm::ivec3(chunkPos.x * CHUNK_WIDTH + x, y, chunkPos.y * CHUNK_DEPTH + z);
+                    glm::ivec3 neighborPos = globalPos + faceNormals[face];
+                    BlockType neighborBlock = worldRef->getWorldBlock(neighborPos.x, neighborPos.y, neighborPos.z);
 
-                    if (isInBounds(neighbor.x, neighbor.y, neighbor.z) && getBlock(neighbor.x, neighbor.y, neighbor.z) != Air)
+                    if (neighborBlock != Air)
                         continue;
+
 
                     int textureIndex;
                     switch (face) {
@@ -95,6 +107,11 @@ std::vector<float> Chunk::buildMesh() {
 
 void Chunk::buildAndUploadMesh() {
     vertices = buildMesh();
+    if (vertices.empty()) return;
+    if (vao == 0)
+        glGenVertexArrays(1, &vao);
+    if (vbo == 0)
+        glGenBuffers(1, &vbo);
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -108,6 +125,8 @@ void Chunk::buildAndUploadMesh() {
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
+
+    dirty = false;
 }
 
 void Chunk::initializeChunk() {
@@ -124,7 +143,6 @@ void Chunk::initializeChunk() {
             }
         }
     }
-    buildAndUploadMesh();
 }
 
 bool Chunk::isInBounds(int x, int y, int z) {
@@ -143,10 +161,16 @@ void Chunk::setBlock(int x, int y, int z, BlockType type) {
     if (!isInBounds(x, y, z))
         return;
     blocks[x][y][z] = type;
+    dirty = true;
+}
+
+bool Chunk::isDirty() {
+    return dirty;
 }
 
 void Chunk::draw(Shader& shader) {
     shader.use();
+    shader.set_mat4("model", model);
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, vertices.size()/5);
     glBindVertexArray(0);
