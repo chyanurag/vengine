@@ -12,6 +12,7 @@
 #include "chunk.h"
 #include "skybox.h"
 #include "outline.h"
+#include "crosshair.h"
 
 #define SHADER_DIR "shaders/"
 
@@ -153,6 +154,9 @@ int main() {
     Shader borderShader(SHADER_DIR "border.vert", SHADER_DIR "border.frag");
     Outline outline(&world);
 
+    Crosshair crosshair;
+    Shader crosshairShader(SHADER_DIR "crosshair.vert", SHADER_DIR "crosshair.frag");
+
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -201,6 +205,8 @@ int main() {
 
         outline.update(camera.position, camera.getFront());
         outline.draw(camera.getViewMatrix(), projection, borderShader);
+
+        crosshair.draw(crosshairShader);
 
         auto end = std::chrono::high_resolution_clock::now();
         std::cout << "Frame Time: " << std::chrono::duration<float, std::milli>(end - start).count() << "ms\n";

@@ -22,10 +22,10 @@
 
 - [x] Highlight the target block
 
+- [x] Crosshair
+
 ### TODO
 
 - [ ] Simple lighting (blinn phong)
 
 - [ ] UI (Maybe)
-
-- [ ] Crosshair
