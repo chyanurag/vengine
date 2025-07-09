@@ -3,7 +3,7 @@
 
 World::World() {
     lastPlayerChunk = glm::ivec2(INT_MIN);
-    setRenderDistance(3);
+    renderDistance = 3;
 }
 
 void World::setRenderDistance(unsigned int dist) {

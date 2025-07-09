@@ -17,11 +17,12 @@ void main() {
 
     float distance = length(FragPos - cameraPos);
     float fogFactor = exp(-distance * 0.02);
-    fogFactor = clamp(fogFactor, 0.3, 1.0);
+    fogFactor = clamp(fogFactor, 0.4, 0.8);
     vec4 baseColor = texture(atlas, Tex);
     float light = clamp(Light, 0.3, .7);
     baseColor *= light;
 
-    FragColor = mix(vec4(fogColor, 1.0), baseColor, fogFactor * 1.2);
+    // FragColor = mix(vec4(fogColor, 1.0), baseColor, fogFactor);
+    FragColor = baseColor;
 
 }

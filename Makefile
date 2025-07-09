@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -Wall -Wextra -std=c++20 -Iinclude
+CXXFLAGS := -O3 -Wall -Wextra -std=c++20 -Iinclude
 
 LDFLAGS := -lglfw -lGLEW -lGL -lglm
 

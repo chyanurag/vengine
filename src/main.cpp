@@ -104,7 +104,7 @@ int main() {
 
     glewInit();
     glViewport(0, 0, mode->width, mode->height);
-    glClearColor(0.529f, 0.808f, 0.922f, 1.0f);
+    glClearColor(0.22f, 0.41f, 0.52, 1.f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
@@ -181,9 +181,9 @@ int main() {
         
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glDepthFunc(GL_LEQUAL);
-        skybox.draw(camera.getViewMatrix(), projection, skyboxShader);
-        glDepthFunc(GL_LESS);
+//        glDepthFunc(GL_LEQUAL);
+//        skybox.draw(camera.getViewMatrix(), projection, skyboxShader);
+//        glDepthFunc(GL_LESS);
 
         shader.use();
 
