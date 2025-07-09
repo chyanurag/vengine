@@ -64,6 +64,7 @@ void World::updateChunksAroundPlayer() {
 
             if (chunks.find(pos) == chunks.end()) {
                 chunks[pos] = std::make_unique<Chunk>(this, pos.x, pos.y);
+                chunks[pos]->setDirty(false);
                 // glm::ivec2 surrouding = pos + glm::ivec2(0, 1);
                 // auto neighborIt = chunks.find(surrouding);
                 // if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }

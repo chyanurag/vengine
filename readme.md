@@ -27,3 +27,5 @@
 - [ ] UI (Maybe)
 
 - [ ] Crosshair
+
+- [ ] Highlight the target block

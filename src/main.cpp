@@ -14,7 +14,7 @@
 
 #define SHADER_DIR "shaders/"
 
-Camera camera(glm::vec3(0.f, 50.f, 20.f));
+Camera camera(glm::vec3(40.f, 50.f, 40.f));
 float lastX = 400, lastY = 400;
 bool firstMouse = true;
 float deltaTime = 0.0f;
@@ -74,7 +74,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
             }
             if (world.getWorldBlock(prevBlock.x, prevBlock.y, prevBlock.z) == Air &&
                 glm::distance(glm::vec3(prevBlock) + glm::vec3(0.5f), camera.position) > 1.0f) {
-                world.setBlock(prevBlock.x, prevBlock.y, prevBlock.z, Stone); // Or selected type
+                world.setBlock(prevBlock.x, prevBlock.y, prevBlock.z, Plank); // Or selected type
             }
         }
     }
@@ -105,6 +105,7 @@ int main() {
     glViewport(0, 0, mode->width, mode->height);
     glClearColor(0.529f, 0.808f, 0.922f, 1.0f);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
     Shader shader(SHADER_DIR "main.vert", SHADER_DIR "main.frag");
     world.setRenderDistance(3);
