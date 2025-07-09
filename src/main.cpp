@@ -138,12 +138,12 @@ int main() {
     stbi_image_free(data);
 
     std::vector<std::string> faces = {
-        "assets/skybox/right.jpg",
-        "assets/skybox/left.jpg",
-        "assets/skybox/top.jpg",
-        "assets/skybox/bottom.jpg",
-        "assets/skybox/front.jpg",
-        "assets/skybox/back.jpg",
+        "assets/skybox/1.png",
+        "assets/skybox/2.png",
+        "assets/skybox/3.png",
+        "assets/skybox/4.png",
+        "assets/skybox/5.png",
+        "assets/skybox/6.png",
     };
     Skybox skybox(faces);
 
@@ -196,8 +196,8 @@ int main() {
 
         shader.set_vec3("cameraPos", camera.position);
         shader.set_vec3("fogColor", glm::vec3(0.7f, 0.7f, 0.8f));
-        shader.set_float("fogStart", 100.f);
-        shader.set_float("fogEnd", 200.f);
+        shader.set_float("fogStart", 500.f);
+        shader.set_float("fogEnd", 550.f);
 
         world.setPlayerPos(camera.position);
         world.updateChunks();

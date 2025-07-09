@@ -24,8 +24,8 @@
 
 - [x] Crosshair
 
-### TODO
+- [x] Simple lighting (per voxel smooth lighting)
 
-- [ ] Simple lighting (blinn phong)
+### TODO
 
 - [ ] UI (Maybe)

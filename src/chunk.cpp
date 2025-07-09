@@ -95,13 +95,14 @@ std::vector<float> Chunk::buildMesh() {
 
                         float u = uOffset + baseUVs[i][0] * tileSize;
                         float v = vOffset + baseUVs[i][1] * tileSize;
+                        float lightLevel = getSmoothLight(globalPos.x + faceVertices[face][i][0], globalPos.y + faceVertices[face][i][1], globalPos.z + faceVertices[face][i][2]);
 
                         vertices.push_back(vx);
                         vertices.push_back(vy);
                         vertices.push_back(vz);
                         vertices.push_back(u);
                         vertices.push_back(v);
-
+                        vertices.push_back(lightLevel);
                     }
                 }
             }
@@ -123,13 +124,14 @@ void Chunk::buildAndUploadMesh() {
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_DYNAMIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glBindVertexArray(0);
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     dirty = false;
 }
@@ -178,7 +180,6 @@ void Chunk::initializeChunk() {
                     blocks[x][y][z] = Stone;
                 }
             }
-            // filling water
             for (int y = 0; y <= WATER_LEVEL; y++) {
                 if (blocks[x][y][z] == Air && (getBlock(x, y-1, z) != Air || getBlock(x, y-1, z) == Water)) {
                     blocks[x][y][z] = Water;
@@ -214,6 +215,32 @@ void Chunk::setDirty(bool value) {
 bool Chunk::isDirty() {
     return dirty;
 }
+
+float Chunk::getSmoothLight(int wx, int wy, int wz) {
+    float total = 0.0f;
+    int samples = 0;
+
+    for (int dx = 0; dx <= 1; dx++) {
+        for (int dy = 0; dy <= 1; dy++) {
+            for (int dz = 0; dz <= 1; dz++) {
+                int lx = wx + dx;
+                int ly = wy + dy;
+                int lz = wz + dz;
+
+                BlockType b = worldRef->getWorldBlock(lx, ly, lz);
+                uint8_t lightValue = 0;
+                if (b == Air) {
+                    lightValue = 8;
+                }
+                total += lightValue;
+                samples++;
+            }
+        }
+    }
+
+    return total / (samples * 15.0f);
+}
+
 
 void Chunk::draw(Shader& shader) {
     shader.use();

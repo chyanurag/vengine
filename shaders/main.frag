@@ -4,6 +4,7 @@ out vec4 FragColor;
 
 in vec2 Tex;
 in vec3 FragPos;
+in float Light;
 
 uniform sampler2D atlas;
 
@@ -16,8 +17,10 @@ void main() {
 
     float distance = length(FragPos - cameraPos);
     float fogFactor = exp(-distance * 0.02);
-    fogFactor = clamp(fogFactor, 0.0, 1.0);
+    fogFactor = clamp(fogFactor, 0.3, 1.0);
     vec4 baseColor = texture(atlas, Tex);
+    float light = clamp(Light, 0.3, .7);
+    baseColor *= light;
 
     FragColor = mix(vec4(fogColor, 1.0), baseColor, fogFactor * 1.2);
 

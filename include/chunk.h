@@ -23,6 +23,7 @@ class Chunk {
         BlockType getBlock(int x, int y, int z);
         bool isInBounds(int x, int y, int z);
         void setBlock(int x, int y, int z, BlockType type);
+        float getSmoothLight(int wx, int wy, int wz);
         void initializeChunk();
         void buildAndUploadMesh();
         bool isDirty();
