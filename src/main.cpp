@@ -109,7 +109,7 @@ int main() {
     glEnable(GL_CULL_FACE);
 
     Shader shader(SHADER_DIR "main.vert", SHADER_DIR "main.frag");
-    world.setRenderDistance(3);
+    world.setRenderDistance(5);
     world.setPlayerPos(camera.position);
     world.updateChunksAroundPlayer();
     world.updateChunks();
