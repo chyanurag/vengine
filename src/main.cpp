@@ -11,6 +11,7 @@
 #include "world.h"
 #include "chunk.h"
 #include "skybox.h"
+#include "outline.h"
 
 #define SHADER_DIR "shaders/"
 
@@ -58,11 +59,10 @@ void mouse_callback(GLFWwindow* _, double xpos, double ypos) {
 }
 
 World world;
+glm::ivec3 hitBlock;
+glm::ivec3 prevBlock;
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    glm::ivec3 hitBlock;
-    glm::ivec3 prevBlock;
-
     if (world.raycastBlock(camera.position, camera.getFront(), 100, hitBlock, prevBlock)) {
         if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
             world.setBlock(hitBlock.x, hitBlock.y, hitBlock.z, Air);
@@ -74,7 +74,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
             }
             if (world.getWorldBlock(prevBlock.x, prevBlock.y, prevBlock.z) == Air &&
                 glm::distance(glm::vec3(prevBlock) + glm::vec3(0.5f), camera.position) > 1.0f) {
-                world.setBlock(prevBlock.x, prevBlock.y, prevBlock.z, Plank); // Or selected type
+                world.setBlock(prevBlock.x, prevBlock.y, prevBlock.z, Plank);
             }
         }
     }
@@ -150,6 +150,9 @@ int main() {
     skyboxShader.use();
     skyboxShader.set_int("skybox", 0);
 
+    Shader borderShader(SHADER_DIR "border.vert", SHADER_DIR "border.frag");
+    Outline outline(&world);
+
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -189,12 +192,15 @@ int main() {
 
         shader.set_vec3("cameraPos", camera.position);
         shader.set_vec3("fogColor", glm::vec3(0.7f, 0.7f, 0.8f));
-        shader.set_float("fogStart", 40.f);
-        shader.set_float("fogEnd", 100.f);
+        shader.set_float("fogStart", 100.f);
+        shader.set_float("fogEnd", 200.f);
 
         world.setPlayerPos(camera.position);
         world.updateChunks();
         world.drawChunks(shader);
+
+        outline.update(camera.position, camera.getFront());
+        outline.draw(camera.getViewMatrix(), projection, borderShader);
 
         auto end = std::chrono::high_resolution_clock::now();
         std::cout << "Frame Time: " << std::chrono::duration<float, std::milli>(end - start).count() << "ms\n";

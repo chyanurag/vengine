@@ -20,6 +20,8 @@
 
 - [x] procedurally generate terrain using simplex or perlin noise
 
+- [x] Highlight the target block
+
 ### TODO
 
 - [ ] Simple lighting (blinn phong)
@@ -27,5 +29,3 @@
 - [ ] UI (Maybe)
 
 - [ ] Crosshair
-
-- [ ] Highlight the target block
