@@ -12,7 +12,7 @@ public:
     Camera(glm::vec3 startPos) : position(startPos), yaw(-90.f), pitch(0.f) {}
     glm::vec3 getFront() const;
     glm::mat4 getViewMatrix() const;
-    void processKeyboard(int key, float deltaTime);
+    void processKeyboard(GLFWwindow* window, int key, float deltaTime);
     void processMouse(float dx, float dy);
 };
 

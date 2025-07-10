@@ -12,24 +12,29 @@ glm::mat4 Camera::getViewMatrix() const {
     return glm::lookAt(position, position + getFront(), glm::vec3(0.f, 1.f, 0.f));
 }
 
-void Camera::processKeyboard(int key, float deltaTime) {
+void Camera::processKeyboard(GLFWwindow* window, int key, float deltaTime) {
     float velocity = speed * deltaTime;
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        velocity *= 5.0f;
+
     glm::vec3 front = getFront();
     glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.f, 1.f, 0.f)));
 
-    if (key == GLFW_KEY_W)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         position += front * velocity;
-    if (key == GLFW_KEY_S)
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         position -= front * velocity;
-    if (key == GLFW_KEY_A)
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         position -= right * velocity;
-    if (key == GLFW_KEY_D)
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         position += right * velocity;
-    if (key == GLFW_KEY_SPACE)
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         position += glm::vec3(0.f, 1.f, 0.f) * velocity;
-    if (key == GLFW_KEY_C)
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
         position += glm::vec3(0.f, -1.f, 0.f) * velocity;
 }
+
 
 void Camera::processMouse(float dx, float dy) {
     yaw += dx * sensitivity;

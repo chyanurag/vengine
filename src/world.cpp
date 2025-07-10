@@ -13,12 +13,12 @@ void World::setRenderDistance(unsigned int dist) {
     }
 }
 
+int floorDiv(int a, int b) {
+    return (a >= 0) ? (a / b) : ((a - b + 1) / b);
+}
+
 glm::ivec2 World::getChunkCoords(int x, int z) {
-    int chunkX = x / CHUNK_WIDTH;
-    int chunkZ = z / CHUNK_DEPTH;
-    if (x < 0) chunkX--;
-    if (z < 0) chunkZ--;
-    return glm::ivec2(chunkX, chunkZ);
+    return glm::ivec2(floorDiv(x, CHUNK_WIDTH), floorDiv(z, CHUNK_DEPTH));
 }
 
 void World::markChunkDirty(int x, int z) {
@@ -64,7 +64,13 @@ void World::updateChunksAroundPlayer() {
 
             if (chunks.find(pos) == chunks.end()) {
                 chunks[pos] = std::make_unique<Chunk>(this, pos.x, pos.y);
-                chunks[pos]->setDirty(false);
+                chunks[pos]->setDirty(true);
+                for (auto offset : { glm::ivec2(1, 0), glm::ivec2(-1, 0), glm::ivec2(0, 1), glm::ivec2(0, -1) }) {
+                    auto neighborIt = chunks.find(pos + offset);
+                    if (neighborIt != chunks.end()) {
+                        neighborIt->second->setDirty(true);
+                    }
+                }
                 // glm::ivec2 surrouding = pos + glm::ivec2(0, 1);
                 // auto neighborIt = chunks.find(surrouding);
                 // if (neighborIt != chunks.end()) { neighborIt->second->setDirty(true); }
@@ -86,18 +92,6 @@ void World::updateChunksAroundPlayer() {
             it = chunks.erase(it);
         } else {
             ++it;
-        }
-    }
-
-    for (const glm::ivec2& pos : neededChunks) {
-        bool hasAllNeighbors =
-            chunks.find(pos + glm::ivec2( 1,  0)) != chunks.end() &&
-            chunks.find(pos + glm::ivec2(-1,  0)) != chunks.end() &&
-            chunks.find(pos + glm::ivec2( 0,  1)) != chunks.end() &&
-            chunks.find(pos + glm::ivec2( 0, -1)) != chunks.end();
-
-        if (hasAllNeighbors) {
-            chunks[pos]->setDirty(true);
         }
     }
 }
@@ -124,12 +118,22 @@ void World::updateChunks() {
 
     for (auto& [pos, chunk] : chunks) {
         if (chunk->isDirty()) {
+            bool hasAllNeighbors =
+                chunks.contains(pos + glm::ivec2(1, 0)) &&
+                chunks.contains(pos + glm::ivec2(-1, 0)) &&
+                chunks.contains(pos + glm::ivec2(0, 1)) &&
+                chunks.contains(pos + glm::ivec2(0, -1));
+
+            if (!hasAllNeighbors)
+                continue;
+
             chunk->buildAndUploadMesh();
             built++;
             if (built >= maxChunksPerFrame)
                 break;
         }
     }
+
 }
 
 bool World::raycastBlock(glm::vec3 origin, glm::vec3 direction, int maxSteps, glm::ivec3& outBlock, glm::ivec3& outPrevBlock) {

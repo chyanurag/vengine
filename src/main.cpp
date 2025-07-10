@@ -27,17 +27,18 @@ int frameCount = 0;
 
 void processKeyboard(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.processKeyboard(GLFW_KEY_W, deltaTime);
+        camera.processKeyboard(window, GLFW_KEY_W, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.processKeyboard(GLFW_KEY_S, deltaTime);
+        camera.processKeyboard(window, GLFW_KEY_S, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.processKeyboard(GLFW_KEY_A, deltaTime);
+        camera.processKeyboard(window, GLFW_KEY_A, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.processKeyboard(GLFW_KEY_D, deltaTime);
+        camera.processKeyboard(window, GLFW_KEY_D, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        camera.processKeyboard(GLFW_KEY_SPACE, deltaTime);
+        camera.processKeyboard(window, GLFW_KEY_SPACE, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-        camera.processKeyboard(GLFW_KEY_C, deltaTime);
+        camera.processKeyboard(window, GLFW_KEY_C, deltaTime);
+
 }
 
 void mouse_callback(GLFWwindow* _, double xpos, double ypos) {
@@ -109,7 +110,7 @@ int main() {
     glEnable(GL_CULL_FACE);
 
     Shader shader(SHADER_DIR "main.vert", SHADER_DIR "main.frag");
-    world.setRenderDistance(5);
+    world.setRenderDistance(10);
     world.setPlayerPos(camera.position);
     world.updateChunksAroundPlayer();
     world.updateChunks();
