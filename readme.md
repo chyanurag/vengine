@@ -29,3 +29,9 @@
 ### TODO
 
 - [ ] UI (Maybe)
+
+Credits:
+
+learnopengl.com : for learning opengl using c++
+
+jdh's youtube video : https://www.youtube.com/watch?v=9f7Hu1ZNYT8
