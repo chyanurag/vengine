@@ -137,13 +137,13 @@ void Chunk::buildAndUploadMesh() {
 }
 
 void Chunk::initializeChunk() {
-    float baseFrequency = 0.03f;
-    float persistence = .1f;
-    int octaves = 3;
+    float baseFrequency = 0.008f;
+    float persistence = 0.5f;
+    int octaves = 4;
     int maxTerrainHeight = CHUNK_HEIGHT - 1;
     float heightScale = 30.0f;
-    float baseHeight = 36.0f;
-    int WATER_LEVEL = 32;
+    float baseHeight = 45.0f;
+    int WATER_LEVEL = 35;
 
     for (int x = 0; x < CHUNK_WIDTH; x++) {
         for (int z = 0; z < CHUNK_DEPTH; z++) {

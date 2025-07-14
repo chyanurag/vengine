@@ -1,3 +1,7 @@
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
@@ -13,6 +17,7 @@
 #include "skybox.h"
 #include "outline.h"
 #include "crosshair.h"
+#include "block_selector.h"
 
 #define SHADER_DIR "shaders/"
 
@@ -24,6 +29,8 @@ float lastFrame = 0.0f;
 
 double fpsTimer = 0.0;
 int frameCount = 0;
+
+BlockSelector selector;
 
 void processKeyboard(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -67,6 +74,8 @@ glm::ivec3 prevBlock;
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     if (world.raycastBlock(camera.position, camera.getFront(), 100, hitBlock, prevBlock)) {
         if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+            if (world.getWorldBlock(hitBlock.x, hitBlock.y, hitBlock.z) == Water)
+                return;
             world.setBlock(hitBlock.x, hitBlock.y, hitBlock.z, Air);
         }
         else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
@@ -76,7 +85,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
             }
             if (world.getWorldBlock(prevBlock.x, prevBlock.y, prevBlock.z) == Air &&
                 glm::distance(glm::vec3(prevBlock) + glm::vec3(0.5f), camera.position) > 1.0f) {
-                world.setBlock(prevBlock.x, prevBlock.y, prevBlock.z, Plank);
+                world.setBlock(prevBlock.x, prevBlock.y, prevBlock.z, selector.getCurrent());
             }
         }
     }
@@ -158,6 +167,13 @@ int main() {
     Crosshair crosshair;
     Shader crosshairShader(SHADER_DIR "crosshair.vert", SHADER_DIR "crosshair.frag");
 
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void) io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -176,6 +192,10 @@ int main() {
         }
 
         glfwPollEvents();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
         auto start = std::chrono::high_resolution_clock::now();
         processKeyboard(window);
@@ -208,13 +228,33 @@ int main() {
         outline.draw(camera.getViewMatrix(), projection, borderShader);
 
         crosshair.draw(crosshairShader);
+        selector.update(window);
 
         auto end = std::chrono::high_resolution_clock::now();
-        std::cout << "Frame Time: " << std::chrono::duration<float, std::milli>(end - start).count() << "ms\n";
+
+        ImGui::Begin("Vengine");
+        std::string ftString = "Frame Time : " + std::to_string(std::chrono::duration<float, std::milli>(end - start).count()) + "ms";
+        ImGui::Text(ftString.c_str());
+        ImGui::Text("WASD for movement");
+        ImGui::Text("Left Click - Destroy Block");
+        ImGui::Text("Right Click - Place Block");
+        ImGui::Text("1 - Dirt");
+        ImGui::Text("2 - Grass");
+        ImGui::Text("3 - Stone");
+        ImGui::Text("4 - Log");
+        ImGui::Text("5 - Plank");
+        ImGui::Text("6 - Cobblestone");
+        ImGui::End();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
     }
 
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     glDeleteTextures(1, &texture);
     glfwDestroyWindow(window);

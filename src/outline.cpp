@@ -14,6 +14,8 @@ Outline::Outline(World* world) : worldRef(world) {
 }
 
 void Outline::draw(glm::mat4 view, glm::mat4 projection, Shader& shader) {
+    if (worldRef->getWorldBlock(hitBlock.x, hitBlock.y, hitBlock.z) == Water)
+        return;
     shader.use();
     shader.set_mat4("projection", projection);
     shader.set_mat4("view", view);

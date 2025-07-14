@@ -15,14 +15,13 @@ uniform float fogEnd;
 
 void main() {
 
-    float distance = length(FragPos - cameraPos);
-    float fogFactor = exp(-distance * 0.02);
-    fogFactor = clamp(fogFactor, 0.4, 0.8);
     vec4 baseColor = texture(atlas, Tex);
-    float light = clamp(Light, 0.3, .7);
-    baseColor *= light;
+    float light = clamp(Light, 0.3, 1.0);
+    vec3 color = baseColor.rgb;
+    color = pow(color, vec3(1.2));
+    color *= light * 1.1;
+    color = min(color * 1.1, vec3(1.0));
+    FragColor = vec4(color, baseColor.a);
 
-    // FragColor = mix(vec4(fogColor, 1.0), baseColor, fogFactor);
-    FragColor = baseColor;
 
 }

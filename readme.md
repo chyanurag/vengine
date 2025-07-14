@@ -28,7 +28,7 @@
 
 ### TODO
 
-- [ ] UI (Maybe)
+- [ ] Transparent water & grass blocks
 
 Credits:
 
